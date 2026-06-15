@@ -1,0 +1,49 @@
+{
+  "version": 2,
+  "name": "GoFaux ecommerce demo",
+  "apis": [
+    {
+      "id": "mock_demo_users",
+      "name": "User by id",
+      "description": "Example path-parameter mock for frontend profile development",
+      "method": "GET",
+      "endpoint": "/users/{id}",
+      "status": 200,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "id": 1,
+        "name": "Example User",
+        "email": "user@example.com",
+        "status": "active"
+      },
+      "priority": 10
+    },
+    {
+      "id": "mock_demo_products",
+      "name": "Filtered products",
+      "description": "Example query-parameter mock for catalog screens",
+      "method": "GET",
+      "endpoint": "/products",
+      "status": 200,
+      "query": {
+        "category": "books"
+      },
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "items": [
+          {
+            "id": 101,
+            "name": "Distributed Systems Handbook",
+            "price": 49.99
+          }
+        ],
+        "total": 1
+      },
+      "priority": 5
+    }
+  ]
+}

@@ -1,0 +1,1327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GoFaux Studio</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7f9;
+      --ink: #111b1f;
+      --muted: #66747a;
+      --surface: #ffffff;
+      --surface-soft: #f8fbfc;
+      --line: #dbe4e7;
+      --line-strong: #c7d4d8;
+      --nav: #101919;
+      --nav-soft: #1b2928;
+      --green: #11705f;
+      --blue: #2b68a6;
+      --amber: #a46018;
+      --red: #a43d3d;
+      --shadow: 0 16px 42px rgba(22, 35, 39, 0.08);
+      --soft-shadow: 0 8px 24px rgba(22, 35, 39, 0.06);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 340px;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(18, 30, 33, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(18, 30, 33, 0.035) 1px, transparent 1px),
+        var(--bg);
+      background-size: 28px 28px;
+    }
+
+    button, input, select, textarea { font: inherit; }
+
+    button {
+      min-height: 36px;
+      border: 0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      background: #edf3f6;
+      color: var(--ink);
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 120ms ease, box-shadow 120ms ease, background 120ms ease;
+    }
+
+    button:hover { transform: translateY(-1px); box-shadow: var(--soft-shadow); }
+    button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .primary { background: var(--green); color: #fff; }
+    .secondary { background: #e8f0fb; color: #1d4d7e; }
+    .danger { background: #fae9e9; color: var(--red); }
+    .ghost { background: transparent; border: 1px solid var(--line); }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdfe;
+      color: var(--ink);
+      min-height: 38px;
+      padding: 8px 10px;
+      outline: none;
+    }
+
+    textarea {
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.38;
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #6bb8ad;
+      box-shadow: 0 0 0 3px rgba(17, 112, 95, 0.12);
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 264px minmax(0, 1fr);
+    }
+
+    aside {
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: var(--nav);
+      color: #ecf5f2;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      padding: 8px 2px 12px;
+    }
+
+    .logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      background: #e9f8f3;
+      color: #0c6658;
+      font-weight: 900;
+      box-shadow: inset 0 0 0 1px rgba(12, 102, 88, 0.15);
+    }
+
+    .brand strong { display: block; font-size: 21px; letter-spacing: 0; }
+    .brand span { color: #adc1bc; font-size: 12px; }
+
+    nav { display: grid; gap: 7px; }
+
+    nav button {
+      color: #dce9e5;
+      background: transparent;
+      border: 1px solid transparent;
+      justify-content: flex-start;
+      text-align: left;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+    }
+
+    nav button::before {
+      content: attr(data-icon);
+      width: 24px;
+      height: 24px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      background: rgba(255,255,255,0.08);
+      color: #cce7e0;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    nav button.active {
+      background: var(--nav-soft);
+      border-color: #3a5550;
+      color: #fff;
+      box-shadow: inset 3px 0 0 #75d7c4;
+    }
+
+    .side-card {
+      margin-top: auto;
+      display: grid;
+      gap: 9px;
+      border: 1px solid #29403d;
+      background: #152321;
+      border-radius: 8px;
+      padding: 12px;
+      color: #c9d8d4;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    main {
+      min-width: 0;
+      padding: 26px;
+      display: grid;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    h1 { margin: 0; font-size: 28px; line-height: 1.12; letter-spacing: 0; }
+    h2 { margin: 0; font-size: 16px; letter-spacing: 0; }
+    h3 { margin: 0; font-size: 14px; letter-spacing: 0; }
+    p { margin: 0; color: var(--muted); line-height: 1.45; }
+
+    .top-actions, .row-actions, .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .pill {
+      width: fit-content;
+      max-width: 100%;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 4px 9px;
+      background: #fff;
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .view { display: none; gap: 16px; }
+    .view.active { display: grid; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .stat {
+      min-height: 92px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      display: grid;
+      align-content: space-between;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: var(--green);
+    }
+
+    .stat:nth-child(2)::before { background: var(--blue); }
+    .stat:nth-child(3)::before { background: var(--amber); }
+    .stat:nth-child(4)::before { background: #6a7b84; }
+    .stat:nth-child(5)::before { background: #7a5ca5; }
+    .stat span { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .stat strong { font-size: 23px; line-height: 1; overflow-wrap: anywhere; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(360px, 0.95fr) minmax(420px, 1.05fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .panel {
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 15px 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .panel-body { padding: 16px; display: grid; gap: 14px; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .field { display: grid; gap: 6px; min-width: 0; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: 12px; color: var(--muted); font-weight: 750; }
+
+    .list { display: grid; gap: 10px; max-height: 620px; overflow: auto; padding-right: 2px; }
+
+    .item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+      transition: border 120ms ease, box-shadow 120ms ease, transform 120ms ease;
+    }
+
+    .item:hover { border-color: #9bc8c0; box-shadow: var(--soft-shadow); transform: translateY(-1px); }
+
+    .item-main {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .route { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+    .method {
+      border-radius: 6px;
+      padding: 4px 7px;
+      background: #e5f4ef;
+      color: #0a6454;
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .endpoint, .mono {
+      font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+      overflow-wrap: anywhere;
+    }
+    .endpoint { font-size: 13px; }
+
+    .meta { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .json {
+      min-height: 280px;
+      max-height: 560px;
+      overflow: auto;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      border-radius: 8px;
+      background: #101817;
+      color: #dff8f1;
+      padding: 14px;
+      font: 13px/1.45 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    }
+
+    .small-json { min-height: 170px; max-height: 260px; }
+
+    .messages { display: grid; gap: 8px; }
+    .message {
+      border-radius: 8px;
+      padding: 9px 10px;
+      border: 1px solid #c8dcf2;
+      color: #24537f;
+      background: #eff6ff;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+    .message.ok { border-color: #c8e8d1; background: #effaf3; color: #1d6a37; }
+    .message.error { border-color: #efc7c7; background: #fff0f0; color: #8d2d2d; }
+
+    .progress {
+      height: 8px;
+      width: 100%;
+      background: #e8eef1;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .progress > span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: var(--green);
+      border-radius: inherit;
+      transition: width 180ms ease;
+    }
+
+    .chart {
+      height: 210px;
+      display: flex;
+      align-items: end;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfdfe;
+    }
+    .bar {
+      flex: 1;
+      min-width: 16px;
+      display: grid;
+      gap: 6px;
+      align-items: end;
+      height: 100%;
+    }
+    .bar-fill {
+      min-height: 3px;
+      border-radius: 5px 5px 2px 2px;
+      background: var(--blue);
+    }
+    .bar-label {
+      color: var(--muted);
+      font-size: 11px;
+      text-align: center;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+
+    .model-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      padding: 13px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .busy::after {
+      content: "";
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      margin-left: 8px;
+      vertical-align: -2px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.45);
+      border-top-color: #fff;
+      animation: spin 800ms linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 1180px) {
+      .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 860px) {
+      .app { grid-template-columns: 1fr; }
+      aside { position: static; height: auto; }
+      nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      nav button { justify-content: center; text-align: center; }
+      .side-card { display: none; }
+      .topbar { flex-direction: column; }
+      .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      main { padding: 16px; }
+    }
+
+    @media (max-width: 560px) {
+      .stats, .form-grid { grid-template-columns: 1fr; }
+      nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside>
+      <div class="brand">
+        <div class="logo">GF</div>
+        <div><strong>GoFaux</strong><span>Local API mock studio</span></div>
+      </div>
+      <nav>
+        <button class="active" data-view="overview" data-icon="OV">Overview</button>
+        <button data-view="generate" data-icon="AI">Generate</button>
+        <button data-view="openapi" data-icon="OA">OpenAPI</button>
+        <button data-view="projectscan" data-icon="PS">Project Scan</button>
+        <button data-view="evaluation" data-icon="EV">Evaluate</button>
+        <button data-view="mocks" data-icon="MO">Mocks</button>
+        <button data-view="traffic" data-icon="TR">Traffic</button>
+        <button data-view="models" data-icon="LM">Models</button>
+        <button data-view="settings" data-icon="ST">Settings</button>
+      </nav>
+      <div class="side-card">
+        <span class="pill" id="sideProvider">provider</span>
+        <span id="sideAddress">Loading server...</span>
+        <span id="sideConfig">Config loading...</span>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div>
+          <h1>GoFaux Studio</h1>
+          <p id="subtitle">Local mock server, AI generation, model management, and request inspection.</p>
+        </div>
+        <div class="top-actions">
+          <button id="refreshBtn">Refresh</button>
+          <a id="healthLink" target="_blank" rel="noreferrer"><button class="secondary" type="button">Health</button></a>
+        </div>
+      </div>
+
+      <section class="stats">
+        <div class="stat"><span>Mocks</span><strong id="statMocks">0</strong></div>
+        <div class="stat"><span>Requests</span><strong id="statRequests">0</strong></div>
+        <div class="stat"><span>Misses</span><strong id="statMisses">0</strong></div>
+        <div class="stat"><span>Provider</span><strong id="statProvider">template</strong></div>
+        <div class="stat"><span>Model</span><strong id="statModel">default</strong></div>
+      </section>
+
+      <section class="view active" id="view-overview">
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Request Timeline</h2><span class="pill" id="trafficPill">0 events</span></div>
+            <div class="panel-body">
+              <div class="chart" id="timelineChart"></div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Recent Traffic</h2><button data-open-view="traffic">Open Traffic</button></div>
+            <div class="panel-body"><div class="list" id="recentTraffic"></div></div>
+          </section>
+        </div>
+        <div class="grid-3">
+          <section class="panel"><div class="panel-head"><h2>Methods</h2></div><div class="panel-body" id="methodCounts"></div></section>
+          <section class="panel"><div class="panel-head"><h2>Status Codes</h2></div><div class="panel-body" id="statusCounts"></div></section>
+          <section class="panel"><div class="panel-head"><h2>Top Paths</h2></div><div class="panel-body" id="pathCounts"></div></section>
+        </div>
+      </section>
+
+      <section class="view" id="view-generate">
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Generate With Local AI</h2><span class="pill">AI authoring</span></div>
+            <div class="panel-body">
+              <div class="form-grid">
+                <div class="field full"><label>Natural instruction</label><textarea id="intent">list people with name, age and nationality</textarea></div>
+                <div class="field"><label>Method</label><select id="method"><option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option></select></div>
+                <div class="field"><label>Endpoint</label><input id="endpoint" value="/people"></div>
+                <div class="field"><label>Status</label><input id="status" type="number" min="100" max="599" value="200"></div>
+                <div class="field"><label>Mock name</label><input id="mockName" placeholder="People list"></div>
+                <div class="field"><label>DTO name</label><input id="dtoName" placeholder="person"></div>
+                <div class="field full"><label>Field hints</label><input id="fieldsText" placeholder="id:int,name:string,age:int or natural hints"></div>
+                <div class="field full"><label>Constraint rules</label><textarea id="constraintsText" placeholder="passportNumber: pattern WS-xxxxxxx&#10;age: integer 18-70&#10;email: email"></textarea></div>
+                <div class="field full"><label>Description override</label><textarea id="description" placeholder="Leave empty to use the natural instruction"></textarea></div>
+                <div class="field full"><label>Request DTO/sample JSON</label><textarea id="requestDto" placeholder='{"country":"AZ"}'></textarea></div>
+                <div class="field full"><label>Response JSON Schema</label><textarea id="responseSchema" placeholder='{"type":"object"}'></textarea></div>
+              </div>
+              <div class="row-actions"><button class="primary" id="generateBtn">Generate JSON</button><button id="saveGeneratedBtn" disabled>Save Mock</button></div>
+              <div class="messages" id="generateMessages"></div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Generated Body</h2><span class="pill" id="generatedMeta">waiting</span></div>
+            <div class="panel-body"><pre class="json" id="generatedPreview">Generated JSON will appear here.</pre></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-openapi">
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>OpenAPI / Swagger Import</h2><span class="pill">contract driven</span></div>
+            <div class="panel-body">
+              <div class="field full"><label>OpenAPI JSON or YAML</label><textarea id="openapiContent" placeholder="Paste OpenAPI 3.x or Swagger 2.0 content here"></textarea></div>
+              <div class="row-actions">
+                <button class="primary" id="previewOpenAPIBtn">Preview Contract</button>
+                <button id="importOpenAPIBtn" disabled>Import Selected</button>
+                <label class="pill"><input id="openapiUseAI" type="checkbox" style="width:auto;min-height:0"> use current AI provider</label>
+              </div>
+              <div class="messages" id="openapiMessages"></div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Contract Preview</h2><span class="pill" id="openapiMeta">no contract</span></div>
+            <div class="panel-body"><div class="list" id="openapiOperations"></div></div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><h2>Import Result</h2><span class="pill">saved mocks</span></div>
+          <div class="panel-body"><pre class="json small-json" id="openapiResult">Imported mocks will appear here.</pre></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-projectscan">
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Project Integration Scan</h2><span class="pill">source analysis</span></div>
+            <div class="panel-body">
+              <div class="field full"><label>Project folder</label><input id="projectScanPath" placeholder="C:\Users\elmin\Desktop\MyBackend"></div>
+              <div class="row-actions">
+                <button class="primary" id="scanProjectBtn">Scan Project</button>
+                <button id="importProjectBtn" disabled>Import Selected</button>
+                <label class="pill"><input id="projectScanUseAI" type="checkbox" style="width:auto;min-height:0"> use current AI provider</label>
+              </div>
+              <div class="row-actions">
+                <button class="secondary" id="selectExternalProjectBtn" type="button">Select External</button>
+                <button id="selectAllProjectBtn" type="button">Select All</button>
+                <button id="clearProjectSelectionBtn" type="button">Clear</button>
+              </div>
+              <div class="messages" id="projectScanMessages"></div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Scan Summary</h2><span class="pill" id="projectScanMeta">not scanned</span></div>
+            <div class="panel-body">
+              <div class="meta">
+                <span class="pill">detected <strong id="projectScanDetected">0</strong></span>
+                <span class="pill">external <strong id="projectScanExternal">0</strong></span>
+                <span class="pill">files <strong id="projectScanFiles">0</strong></span>
+              </div>
+              <pre class="json small-json" id="projectScanResult">Imported mocks will appear here.</pre>
+            </div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><h2>Detected Integrations</h2><span class="pill">checked items become mocks</span></div>
+          <div class="panel-body"><div class="list" id="projectScanIntegrations"></div></div>
+        </section>
+      </section>
+
+      <section class="view" id="view-evaluation">
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Model Evaluation</h2><span class="pill">local benchmark</span></div>
+            <div class="panel-body">
+              <div class="field full"><label>Targets</label><div class="list" id="evaluationTargets"></div></div>
+              <div class="field full"><label>Prompt cases JSON</label><textarea id="evaluationCases"></textarea></div>
+              <div class="row-actions"><button class="primary" id="startEvaluationBtn">Run Evaluation</button><button id="refreshEvaluationsBtn">Refresh</button></div>
+              <div class="messages" id="evaluationMessages"></div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Evaluation Jobs</h2><span class="pill" id="evaluationMeta">0 jobs</span></div>
+            <div class="panel-body"><div class="list" id="evaluationJobs"></div></div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><h2>Results</h2><span class="pill" id="evaluationResultMeta">select a job</span></div>
+          <div class="panel-body">
+            <table><thead><tr><th>Target</th><th>Runs</th><th>Valid JSON</th><th>Quality</th><th>Model pass</th><th>Fallbacks</th><th>Avg ms</th></tr></thead><tbody id="evaluationSummary"></tbody></table>
+            <pre class="json small-json" id="evaluationDetail">Run an evaluation to compare local models.</pre>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-mocks">
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Mock Inventory</h2><span class="pill" id="mockCountPill">0 loaded</span></div>
+            <div class="panel-body"><div class="list" id="mockList"></div></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Mock Detail</h2><span class="pill" id="previewTitle">none</span></div>
+            <div class="panel-body">
+              <pre class="json" id="mockPreview">Select a mock to inspect it.</pre>
+              <div class="row-actions"><button id="testMockBtn" class="secondary" disabled>Test Endpoint</button><button id="deleteMockBtn" class="danger" disabled>Delete Mock</button></div>
+              <pre class="json small-json hidden" id="testPreview"></pre>
+            </div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><h2>Add Manual Mock</h2><span class="pill">full control</span></div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Method</label><select id="manualMethod"><option>GET</option><option>POST</option><option>PUT</option><option>PATCH</option><option>DELETE</option></select></div>
+              <div class="field"><label>Endpoint</label><input id="manualEndpoint" value="/health"></div>
+              <div class="field"><label>Status</label><input id="manualStatus" type="number" min="100" max="599" value="200"></div>
+              <div class="field"><label>Name</label><input id="manualName" placeholder="Health response"></div>
+              <div class="field"><label>Delay ms</label><input id="manualDelay" type="number" min="0" value="0"></div>
+              <div class="field"><label>Priority</label><input id="manualPriority" type="number" value="0"></div>
+              <div class="field full"><label>Description</label><input id="manualDescription" placeholder="Simple development response"></div>
+              <div class="field"><label>Response headers</label><input id="manualHeaders" placeholder="Content-Type=application/json"></div>
+              <div class="field"><label>Required query</label><input id="manualQuery" placeholder="tenant=demo,active=true"></div>
+              <div class="field full"><label>Required request headers</label><input id="manualReqHeaders" placeholder="X-Tenant=demo"></div>
+              <div class="field full"><label>Response JSON body</label><textarea id="manualBody">{"status":"ok","service":"GoFaux"}</textarea></div>
+            </div>
+            <div class="row-actions"><button class="primary" id="saveManualBtn">Save Manual Mock</button></div>
+            <div class="messages" id="manualMessages"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-traffic">
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Request Log</h2><button class="danger" id="clearTrafficBtn">Clear</button></div>
+            <div class="panel-body"><div class="list" id="trafficList"></div></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Request Detail</h2><span class="pill" id="trafficDetailTitle">none</span></div>
+            <div class="panel-body"><pre class="json" id="trafficDetail">Select a request to inspect method, headers, body, matched mock, and timing.</pre></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="view" id="view-models">
+        <div class="grid-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Curated Local Model Catalog</h2><span class="pill" id="modelDir">model dir</span></div>
+            <div class="panel-body"><div class="list" id="modelCatalog"></div></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Downloads & Installed Models</h2><button id="loadModelsBtn">Refresh</button></div>
+            <div class="panel-body">
+              <div id="downloadJobs" class="list"></div>
+              <table><thead><tr><th>Name</th><th>Size</th><th>Path</th><th></th></tr></thead><tbody id="downloadedModels"></tbody></table>
+            </div>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><h2>Download Custom GGUF</h2><span class="pill">advanced</span></div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="field full"><label>Direct GGUF URL</label><input id="customModelUrl" placeholder="https://huggingface.co/.../resolve/main/model.gguf"></div>
+              <div class="field"><label>Filename</label><input id="customModelFilename" placeholder="my-model.gguf"></div>
+              <div class="field"><label>Display name</label><input id="customModelName" placeholder="My local model"></div>
+            </div>
+            <div class="row-actions"><button class="primary" id="downloadCustomBtn">Download Custom Model</button></div>
+            <div class="messages" id="modelMessages"></div>
+          </div>
+        </section>
+      </section>
+
+      <section class="view" id="view-settings">
+        <section class="panel">
+          <div class="panel-head"><h2>AI Provider Settings</h2><span class="pill">saved locally</span></div>
+          <div class="panel-body">
+            <div class="form-grid">
+              <div class="field"><label>Provider</label><select id="provider"><option value="template">Template fallback</option><option value="managed">GoFaux managed runner</option><option value="openai">OpenAI-compatible local server</option><option value="ollama">Ollama</option></select></div>
+              <div class="field"><label>Endpoint</label><input id="endpointSetting" placeholder="http://localhost:1234/v1/chat/completions"></div>
+              <div class="field full"><label>Model or model path</label><input id="model" placeholder=".gofaux/models/model.gguf"></div>
+            </div>
+            <div class="row-actions"><button class="primary" id="saveSettingsBtn">Save Settings</button><button data-open-view="models">Choose Downloaded Model</button></div>
+            <div class="messages" id="settingsMessages"></div>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const state = { data: null, models: null, traffic: null, openapi: null, projectScan: null, evaluations: null, selectedEvaluation: null, selectedMock: null, selectedTraffic: null, generated: null, polls: {} };
+    const $ = (id) => document.getElementById(id);
+    const api = async (path, options = {}) => {
+      const response = await fetch('/_gofaux/api/' + path, { headers: { 'Content-Type': 'application/json' }, ...options });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || response.statusText);
+      return data;
+    };
+
+    const pretty = (value) => JSON.stringify(value, null, 2);
+    const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const formatBytes = (size) => {
+      if (!size) return '0 B';
+      const units = ['B', 'KiB', 'MiB', 'GiB'];
+      let value = size, i = 0;
+      while (value >= 1024 && i < units.length - 1) { value /= 1024; i++; }
+      return `${value.toFixed(i ? 1 : 0)} ${units[i]}`;
+    };
+    const classForMessage = (text) => {
+      const v = String(text).toLowerCase();
+      if (v.includes('saved') || v.includes('complete') || v.includes('succeeded') || v.includes('passed')) return 'ok';
+      if (v.includes('failed') || v.includes('error') || v.includes('invalid')) return 'error';
+      return '';
+    };
+    const message = (target, text, ok = false) => target.innerHTML = text ? `<div class="message ${ok ? 'ok' : classForMessage(text)}">${escapeHTML(text)}</div>` : '';
+    const messages = (target, values) => target.innerHTML = (values || []).map((text) => `<div class="message ${classForMessage(text)}">${escapeHTML(text)}</div>`).join('');
+
+    function setView(name) {
+      document.querySelectorAll('nav button').forEach((button) => button.classList.toggle('active', button.dataset.view === name));
+      document.querySelectorAll('.view').forEach((view) => view.classList.toggle('active', view.id === 'view-' + name));
+      if (name === 'traffic') loadTraffic();
+      if (name === 'models') loadModels();
+      if (name === 'evaluation') loadEvaluations();
+    }
+
+    async function loadAll() {
+      await Promise.all([loadState(), loadModels(), loadTraffic(), loadEvaluations()]);
+      renderAll();
+    }
+
+    async function loadState() { state.data = await api('state'); }
+    async function loadModels() { state.models = await api('models'); renderModels(); }
+    async function loadTraffic() { state.traffic = await api('traffic'); renderTraffic(); renderOverview(); }
+    async function loadEvaluations() { state.evaluations = await api('evaluations'); renderEvaluations(); }
+
+    function renderAll() {
+      renderState();
+      renderMocks();
+      renderTraffic();
+      renderModels();
+      renderOverview();
+      renderOpenAPIPreview();
+      renderProjectScan();
+      renderEvaluations();
+    }
+
+    function renderState() {
+      const data = state.data;
+      if (!data) return;
+      const provider = data.assistant.provider || 'template';
+      const model = data.assistant.model || 'default';
+      $('subtitle').textContent = `${data.server.address} · ${data.server.mock_config}`;
+      $('healthLink').href = data.server.address + '/_gofaux/health';
+      $('sideProvider').textContent = provider;
+      $('sideAddress').textContent = data.server.address;
+      $('sideConfig').textContent = data.server.mock_config;
+      $('statMocks').textContent = data.stats.mock_count || 0;
+      $('statRequests').textContent = data.stats.total_requests || 0;
+      $('statMisses').textContent = data.stats.missed_requests || 0;
+      $('statProvider').textContent = provider;
+      $('statModel').textContent = model.split(/[\\/]/).pop();
+      $('provider').value = provider;
+      $('model').value = data.assistant.model || '';
+      $('endpointSetting').value = data.assistant.endpoint || '';
+      $('mockCountPill').textContent = `${(data.mocks || []).length} loaded`;
+    }
+
+    function renderOverview() {
+      const traffic = state.traffic || state.data?.traffic || { recent: [], by_method: [], by_status: [], top_paths: [], timeline: [] };
+      $('trafficPill').textContent = `${traffic.total || 0} events`;
+      renderChart($('timelineChart'), traffic.timeline || []);
+      renderCountList($('methodCounts'), traffic.by_method || []);
+      renderCountList($('statusCounts'), traffic.by_status || []);
+      renderCountList($('pathCounts'), traffic.top_paths || []);
+      $('recentTraffic').innerHTML = (traffic.recent || []).slice(0, 6).map(trafficRowHTML).join('') || '<p>No traffic captured yet.</p>';
+      bindTrafficButtons();
+    }
+
+    function renderChart(target, data) {
+      const max = Math.max(1, ...data.map((x) => x.count));
+      target.innerHTML = data.length ? data.map((x) => `
+        <div class="bar" title="${escapeHTML(x.label)}: ${x.count}">
+          <div class="bar-fill" style="height:${Math.max(4, x.count / max * 150)}px"></div>
+          <div class="bar-label">${escapeHTML(x.label)}</div>
+        </div>`).join('') : '<p>No request timeline yet.</p>';
+    }
+
+    function renderCountList(target, rows) {
+      target.innerHTML = rows.length ? rows.map((row) => `<div class="item-main"><span class="mono">${escapeHTML(row.label)}</span><strong>${row.count}</strong></div>`).join('') : '<p>No data yet.</p>';
+    }
+
+    function renderMocks() {
+      const mocks = state.data?.mocks || [];
+      $('mockList').innerHTML = mocks.length ? mocks.map((mock) => `
+        <article class="item">
+          <div class="item-main">
+            <div>
+              <div class="route"><span class="method">${escapeHTML(mock.method)}</span><span class="endpoint">${escapeHTML(mock.endpoint)}</span></div>
+              <p>${escapeHTML(mock.name || 'unnamed mock')}</p>
+            </div>
+            <button data-select-mock="${escapeHTML(mock.id)}">Inspect</button>
+          </div>
+          <div class="meta"><span class="pill">status ${mock.status}</span><span class="pill">requests ${mock.requests || 0}</span><span class="pill">priority ${mock.priority || 0}</span></div>
+        </article>`).join('') : '<p>No mocks yet. Generate one or add a manual mock.</p>';
+      document.querySelectorAll('[data-select-mock]').forEach((button) => button.addEventListener('click', () => selectMock(button.dataset.selectMock)));
+      if (!state.selectedMock && mocks.length) selectMock(mocks[0].id);
+    }
+
+    function selectMock(id) {
+      const mock = (state.data?.mocks || []).find((item) => item.id === id);
+      state.selectedMock = mock || null;
+      if (!mock) return;
+      $('previewTitle').textContent = `${mock.method} ${mock.endpoint}`;
+      $('mockPreview').textContent = pretty(mock);
+      $('testMockBtn').disabled = false;
+      $('deleteMockBtn').disabled = false;
+      $('testPreview').classList.add('hidden');
+    }
+
+    function trafficRowHTML(event) {
+      const time = new Date(event.time).toLocaleTimeString();
+      return `<article class="item">
+        <div class="item-main">
+          <div>
+            <div class="route"><span class="method">${escapeHTML(event.method)}</span><span class="endpoint">${escapeHTML(event.path)}</span></div>
+            <p>${time} · ${event.matched ? 'matched' : 'missed'} · ${event.duration_ms} ms</p>
+          </div>
+          <button data-select-traffic="${event.id}">Inspect</button>
+        </div>
+        <div class="meta"><span class="pill">status ${event.status}</span><span class="pill">${event.request_bytes || 0} B body</span><span class="pill">${escapeHTML(event.mock_endpoint || 'no mock')}</span></div>
+      </article>`;
+    }
+
+    function renderTraffic() {
+      const traffic = state.traffic || { recent: [] };
+      $('trafficList').innerHTML = (traffic.recent || []).map(trafficRowHTML).join('') || '<p>No requests captured yet. Call a mock endpoint to see traffic here.</p>';
+      bindTrafficButtons();
+    }
+
+    function bindTrafficButtons() {
+      document.querySelectorAll('[data-select-traffic]').forEach((button) => button.addEventListener('click', () => selectTraffic(Number(button.dataset.selectTraffic))));
+    }
+
+    function selectTraffic(id) {
+      const event = (state.traffic?.recent || state.data?.traffic?.recent || []).find((item) => item.id === id);
+      state.selectedTraffic = event || null;
+      if (!event) return;
+      $('trafficDetailTitle').textContent = `${event.method} ${event.path}`;
+      $('trafficDetail').textContent = pretty(event);
+      setView('traffic');
+    }
+
+    function renderModels() {
+      const models = state.models;
+      if (!models) return;
+      const downloaded = models.downloaded || [];
+      const downloadedByID = new Map(downloaded.map((model) => [model.spec.id, model]));
+      $('modelDir').textContent = models.model_dir || '.gofaux/models';
+      $('modelCatalog').innerHTML = (models.catalog || []).map((spec) => {
+        const installed = downloadedByID.get(spec.id);
+        return `<article class="model-card">
+          <div class="item-main">
+            <div><h3>${escapeHTML(spec.name)}</h3><p>${escapeHTML(spec.notes || '')}</p></div>
+            <span class="pill">${installed ? 'installed' : 'available'}</span>
+          </div>
+          <div class="meta"><span class="pill">${escapeHTML(spec.family)}</span><span class="pill">${escapeHTML(spec.quant)}</span><span class="pill">${formatBytes(spec.size_bytes)}</span></div>
+          <div class="row-actions">
+            <button class="primary" data-download-model="${escapeHTML(spec.id)}" ${installed ? 'disabled' : ''}>${installed ? 'Downloaded' : 'Download'}</button>
+            <button data-use-model="${escapeHTML(installed ? installed.path : '')}" ${installed ? '' : 'disabled'}>Use Managed</button>
+          </div>
+        </article>`;
+      }).join('');
+      $('downloadJobs').innerHTML = (models.downloads || []).map(downloadJobHTML).join('');
+      $('downloadedModels').innerHTML = downloaded.length ? downloaded.map((model) => `
+        <tr><td>${escapeHTML(model.spec.name)}</td><td>${formatBytes(model.size_bytes)}</td><td class="endpoint">${escapeHTML(model.path)}</td><td><button data-use-model="${escapeHTML(model.path)}">Use</button></td></tr>
+      `).join('') : '<tr><td colspan="4">No downloaded models yet.</td></tr>';
+      bindModelButtons();
+    }
+
+    function renderOpenAPIPreview() {
+      const preview = state.openapi;
+      if (!preview) {
+        $('openapiMeta').textContent = 'no contract';
+        $('openapiOperations').innerHTML = '<p>No contract preview yet.</p>';
+        return;
+      }
+      $('openapiMeta').textContent = `${preview.operations?.length || 0} operations`;
+      $('openapiOperations').innerHTML = (preview.operations || []).map((op) => `
+        <article class="item">
+          <div class="item-main">
+            <div>
+              <div class="route"><input type="checkbox" data-openapi-op="${escapeHTML(op.id)}" checked style="width:auto;min-height:0"><span class="method">${escapeHTML(op.method)}</span><span class="endpoint">${escapeHTML(op.path)}</span></div>
+              <p>${escapeHTML(op.summary || op.intent || op.id)}</p>
+            </div>
+            <span class="pill">status ${op.status}</span>
+          </div>
+          <div class="meta"><span class="pill">${escapeHTML(op.dto_name || 'dto')}</span><span class="pill">${(op.fields || []).length} fields</span><span class="pill">${(op.constraints || []).length} constraints</span></div>
+        </article>
+      `).join('') || '<p>No operations found.</p>';
+      $('importOpenAPIBtn').disabled = !(preview.operations || []).length;
+    }
+
+    function renderProjectScan() {
+      const preview = state.projectScan;
+      if (!preview) {
+        $('projectScanMeta').textContent = 'not scanned';
+        $('projectScanDetected').textContent = '0';
+        $('projectScanExternal').textContent = '0';
+        $('projectScanFiles').textContent = '0';
+        $('projectScanIntegrations').innerHTML = '<p>No project scanned yet.</p>';
+        $('importProjectBtn').disabled = true;
+        return;
+      }
+      const integrations = preview.integrations || [];
+      const external = integrations.filter((item) => item.external).length;
+      $('projectScanMeta').textContent = `${integrations.length} candidates`;
+      $('projectScanDetected').textContent = integrations.length;
+      $('projectScanExternal').textContent = external;
+      $('projectScanFiles').textContent = preview.scanned_files || 0;
+      $('projectScanIntegrations').innerHTML = integrations.map((item) => {
+        const confidence = Math.round((item.confidence || 0) * 100);
+        const checked = item.external ? 'checked' : '';
+        const source = `${item.source_file || 'source'}:${item.line || 1}`;
+        const dto = [item.response_dto ? `response ${item.response_dto}` : '', item.request_dto ? `request ${item.request_dto}` : ''].filter(Boolean).join(' · ');
+        return `<label class="item">
+          <div class="item-main">
+            <div>
+              <div class="route"><input type="checkbox" data-project-integration="${escapeHTML(item.id)}" ${checked} style="width:auto;min-height:0"><span class="method">${escapeHTML(item.method)}</span><span class="endpoint">${escapeHTML(item.endpoint)}</span></div>
+              <p>${escapeHTML(item.name || item.kind)}</p>
+            </div>
+            <span class="pill">${item.external ? 'external' : 'internal'}</span>
+          </div>
+          <div class="meta">
+            <span class="pill">${escapeHTML(item.kind || 'integration')}</span>
+            <span class="pill">${escapeHTML(item.direction || 'source')}</span>
+            <span class="pill">${confidence}% confidence</span>
+            <span class="pill mono">${escapeHTML(source)}</span>
+            ${item.base_url ? `<span class="pill endpoint">${escapeHTML(item.base_url)}</span>` : ''}
+            ${dto ? `<span class="pill">${escapeHTML(dto)}</span>` : ''}
+          </div>
+        </label>`;
+      }).join('') || '<p>No integrations found in this project.</p>';
+      $('importProjectBtn').disabled = !integrations.length;
+    }
+
+    function renderEvaluations() {
+      const data = state.evaluations;
+      if (!data) return;
+      const targets = data.targets || [];
+      $('evaluationTargets').innerHTML = targets.map((target, index) => `
+        <label class="item">
+          <div class="item-main">
+            <div><strong>${escapeHTML(target.name)}</strong><p>${escapeHTML(target.provider)} ${target.model ? '· ' + escapeHTML(target.model.split(/[\\/]/).pop()) : ''}</p></div>
+            <input type="checkbox" data-eval-target="${index}" ${index === 0 ? 'checked' : ''} style="width:auto;min-height:0">
+          </div>
+          <div class="meta">${target.size ? `<span class="pill">${formatBytes(target.size)}</span>` : ''}<span class="pill">${escapeHTML(target.id)}</span></div>
+        </label>
+      `).join('') || '<p>No evaluation targets available.</p>';
+      if (!$('evaluationCases').value.trim()) $('evaluationCases').value = pretty(data.cases || []);
+      const jobs = data.jobs || [];
+      $('evaluationMeta').textContent = `${jobs.length} jobs`;
+      $('evaluationJobs').innerHTML = jobs.map((job) => evaluationJobHTML(job)).join('') || '<p>No evaluation jobs yet.</p>';
+      document.querySelectorAll('[data-select-eval]').forEach((button) => button.addEventListener('click', () => selectEvaluation(button.dataset.selectEval)));
+      if (!state.selectedEvaluation && jobs.length) selectEvaluation(jobs[0].id);
+    }
+
+    function evaluationJobHTML(job) {
+      const pct = job.total ? Math.round((job.completed || 0) / job.total * 100) : 0;
+      return `<article class="item">
+        <div class="item-main">
+          <div><strong>${escapeHTML(job.status)}</strong><p>${escapeHTML(job.last_message || job.id)}</p></div>
+          <button data-select-eval="${escapeHTML(job.id)}">Inspect</button>
+        </div>
+        <div class="progress"><span style="width:${pct}%"></span></div>
+        <div class="meta"><span class="pill">${job.completed || 0}/${job.total || 0}</span><span class="pill">${pct}%</span><span class="pill mono">${escapeHTML(job.id)}</span></div>
+      </article>`;
+    }
+
+    function selectEvaluation(id) {
+      const job = (state.evaluations?.jobs || []).find((item) => item.id === id);
+      state.selectedEvaluation = job || null;
+      if (!job) return;
+      $('evaluationResultMeta').textContent = `${job.status} · ${job.completed || 0}/${job.total || 0}`;
+      $('evaluationSummary').innerHTML = (job.summary || []).map((row) => `
+        <tr><td>${escapeHTML(row.name)}</td><td>${row.total}</td><td>${row.valid_json}</td><td>${row.quality_passed}</td><td>${row.model_passed}</td><td>${row.fallbacks}</td><td>${Math.round(row.average_latency_ms || 0)}</td></tr>
+      `).join('') || '<tr><td colspan="7">No summary yet.</td></tr>';
+      $('evaluationDetail').textContent = pretty(job.results || []);
+    }
+
+    function downloadJobHTML(job) {
+      const percent = Math.round(job.percent || 0);
+      return `<article class="item">
+        <div class="item-main"><div><strong>${escapeHTML(job.name)}</strong><p>${escapeHTML(job.status)} ${job.error ? '- ' + job.error : ''}</p></div><span class="pill">${percent}%</span></div>
+        <div class="progress"><span style="width:${percent}%"></span></div>
+        <div class="meta"><span class="pill">${formatBytes(job.progress?.written_bytes || 0)} / ${formatBytes(job.progress?.total_bytes || 0)}</span>${job.path ? `<span class="pill endpoint">${escapeHTML(job.path)}</span>` : ''}</div>
+      </article>`;
+    }
+
+    function bindModelButtons() {
+      document.querySelectorAll('[data-download-model]').forEach((button) => button.addEventListener('click', () => downloadModel({ id: button.dataset.downloadModel })));
+      document.querySelectorAll('[data-use-model]').forEach((button) => button.addEventListener('click', () => useModel(button.dataset.useModel)));
+    }
+
+    async function downloadModel(payload) {
+      try {
+        message($('modelMessages'), 'Starting model download. Keep GoFaux running while the progress bar updates.');
+        const job = await api('models/download', { method: 'POST', body: JSON.stringify(payload) });
+        pollDownload(job.id);
+        await loadModels();
+      } catch (error) { message($('modelMessages'), error.message); }
+    }
+
+    function pollDownload(id) {
+      if (!id || state.polls[id]) return;
+      state.polls[id] = setInterval(async () => {
+        try {
+          const job = await api('models/downloads/' + encodeURIComponent(id));
+          await loadModels();
+          if (job.status === 'completed' || job.status === 'failed') {
+            clearInterval(state.polls[id]);
+            delete state.polls[id];
+            message($('modelMessages'), job.status === 'completed' ? 'Model download completed.' : job.error, job.status === 'completed');
+          }
+        } catch (_) {}
+      }, 1200);
+    }
+
+    async function useModel(path) {
+      if (!path) return;
+      $('provider').value = 'managed';
+      $('model').value = path;
+      $('endpointSetting').value = '';
+      await saveSettings();
+      setView('settings');
+    }
+
+    async function generateMock() {
+      $('generateBtn').disabled = true;
+      $('generateBtn').classList.add('busy');
+      $('saveGeneratedBtn').disabled = true;
+      message($('generateMessages'), 'Starting local generation. Managed models may take a moment to warm up.');
+      try {
+        const payload = {
+          intent: $('intent').value, method: $('method').value, endpoint: $('endpoint').value, status: Number($('status').value || 200),
+          name: $('mockName').value, description: $('description').value, dto_name: $('dtoName').value, fields_text: $('fieldsText').value,
+          constraints_text: $('constraintsText').value, request_dto: $('requestDto').value, response_schema: $('responseSchema').value
+        };
+        const result = await api('generate', { method: 'POST', body: JSON.stringify(payload) });
+        state.generated = { result, payload };
+        $('generatedPreview').textContent = pretty(result.body);
+        $('generatedMeta').textContent = result.used_fallback ? 'fallback used' : `${result.provider}/${result.model || 'default'}`;
+        $('method').value = result.request.method;
+        $('endpoint').value = result.request.endpoint;
+        $('status').value = result.request.status;
+        $('saveGeneratedBtn').disabled = false;
+        result.messages?.length ? messages($('generateMessages'), result.messages) : message($('generateMessages'), 'Generated JSON passed validation.', true);
+      } catch (error) {
+        state.generated = null;
+        $('generatedPreview').textContent = error.message;
+        message($('generateMessages'), error.message);
+      } finally {
+        $('generateBtn').disabled = false;
+        $('generateBtn').classList.remove('busy');
+      }
+    }
+
+    async function saveGenerated() {
+      if (!state.generated) return;
+      const { result, payload } = state.generated;
+      const description = payload.description || payload.intent || result.request.description;
+      await api('mocks', { method: 'POST', body: JSON.stringify({ name: payload.name || description, description, method: result.request.method, endpoint: result.request.endpoint, status: result.request.status, headers: { 'Content-Type': 'application/json' }, body: result.body }) });
+      message($('generateMessages'), 'Mock saved.', true);
+      await loadState(); renderState(); renderMocks(); setView('mocks');
+    }
+
+    async function previewOpenAPI() {
+      $('previewOpenAPIBtn').disabled = true;
+      $('previewOpenAPIBtn').classList.add('busy');
+      try {
+        const preview = await api('openapi/preview', { method: 'POST', body: JSON.stringify({ content: $('openapiContent').value }) });
+        state.openapi = preview;
+        renderOpenAPIPreview();
+        message($('openapiMessages'), `Previewed ${preview.operations?.length || 0} operations.`, true);
+      } catch (error) {
+        message($('openapiMessages'), error.message);
+      } finally {
+        $('previewOpenAPIBtn').disabled = false;
+        $('previewOpenAPIBtn').classList.remove('busy');
+      }
+    }
+
+    async function importOpenAPI() {
+      const selected = Array.from(document.querySelectorAll('[data-openapi-op]:checked')).map((box) => box.dataset.openapiOp);
+      $('importOpenAPIBtn').disabled = true;
+      $('importOpenAPIBtn').classList.add('busy');
+      try {
+        const result = await api('openapi/import', { method: 'POST', body: JSON.stringify({ content: $('openapiContent').value, operation_ids: selected, use_ai: $('openapiUseAI').checked }) });
+        $('openapiResult').textContent = pretty(result.imported || []);
+        result.messages?.length ? messages($('openapiMessages'), result.messages) : message($('openapiMessages'), `Imported ${(result.imported || []).length} mocks.`, true);
+        await loadState(); renderState(); renderMocks();
+      } catch (error) {
+        message($('openapiMessages'), error.message);
+      } finally {
+        $('importOpenAPIBtn').disabled = false;
+        $('importOpenAPIBtn').classList.remove('busy');
+      }
+    }
+
+    async function scanProject() {
+      $('scanProjectBtn').disabled = true;
+      $('scanProjectBtn').classList.add('busy');
+      $('importProjectBtn').disabled = true;
+      message($('projectScanMessages'), 'Scanning project files locally.');
+      try {
+        const preview = await api('project-scan/preview', { method: 'POST', body: JSON.stringify({ path: $('projectScanPath').value }) });
+        state.projectScan = preview;
+        renderProjectScan();
+        const count = preview.integrations?.length || 0;
+        const external = (preview.integrations || []).filter((item) => item.external).length;
+        const scanMessages = preview.messages?.length ? preview.messages : [`Detected ${count} integrations, ${external} marked external by default.`];
+        messages($('projectScanMessages'), scanMessages);
+      } catch (error) {
+        message($('projectScanMessages'), error.message);
+      } finally {
+        $('scanProjectBtn').disabled = false;
+        $('scanProjectBtn').classList.remove('busy');
+      }
+    }
+
+    function selectProjectIntegrations(mode) {
+      const integrations = state.projectScan?.integrations || [];
+      document.querySelectorAll('[data-project-integration]').forEach((box) => {
+        const item = integrations.find((candidate) => candidate.id === box.dataset.projectIntegration);
+        box.checked = mode === 'all' || (mode === 'external' && item?.external);
+      });
+    }
+
+    async function importProjectScan() {
+      const selected = Array.from(document.querySelectorAll('[data-project-integration]:checked')).map((box) => box.dataset.projectIntegration);
+      $('importProjectBtn').disabled = true;
+      $('importProjectBtn').classList.add('busy');
+      try {
+        const result = await api('project-scan/import', { method: 'POST', body: JSON.stringify({ path: $('projectScanPath').value, integration_ids: selected, use_ai: $('projectScanUseAI').checked }) });
+        state.projectScan = result.preview;
+        $('projectScanResult').textContent = pretty(result.imported || []);
+        result.messages?.length ? messages($('projectScanMessages'), result.messages) : message($('projectScanMessages'), `Imported ${(result.imported || []).length} mocks.`, true);
+        await loadState(); renderState(); renderMocks(); renderProjectScan();
+      } catch (error) {
+        message($('projectScanMessages'), error.message);
+      } finally {
+        $('importProjectBtn').disabled = false;
+        $('importProjectBtn').classList.remove('busy');
+      }
+    }
+
+    async function startEvaluation() {
+      try {
+        const targets = Array.from(document.querySelectorAll('[data-eval-target]:checked')).map((box) => state.evaluations.targets[Number(box.dataset.evalTarget)]);
+        const cases = JSON.parse($('evaluationCases').value || '[]');
+        const job = await api('evaluations', { method: 'POST', body: JSON.stringify({ targets, cases }) });
+        message($('evaluationMessages'), 'Evaluation started.', true);
+        pollEvaluation(job.id);
+        await loadEvaluations();
+      } catch (error) {
+        message($('evaluationMessages'), error.message);
+      }
+    }
+
+    function pollEvaluation(id) {
+      if (!id || state.polls[id]) return;
+      state.polls[id] = setInterval(async () => {
+        try {
+          const job = await api('evaluations/' + encodeURIComponent(id));
+          await loadEvaluations();
+          const current = (state.evaluations?.jobs || []).find((item) => item.id === id);
+          if (current) selectEvaluation(id);
+          if (job.status === 'completed' || job.status === 'failed') {
+            clearInterval(state.polls[id]);
+            delete state.polls[id];
+            message($('evaluationMessages'), job.status === 'completed' ? 'Evaluation completed.' : job.error, job.status === 'completed');
+          }
+        } catch (_) {}
+      }, 1500);
+    }
+
+    function parseMap(text, fallback) {
+      text = (text || '').trim();
+      if (!text) return fallback || {};
+      if (text.startsWith('{')) return JSON.parse(text);
+      const out = {};
+      for (const part of text.split(',')) {
+        const [key, ...rest] = part.split('=');
+        if (key && rest.length) out[key.trim()] = rest.join('=').trim();
+      }
+      return out;
+    }
+
+    async function saveManual() {
+      try {
+        const body = JSON.parse($('manualBody').value);
+        const mock = {
+          name: $('manualName').value, description: $('manualDescription').value, method: $('manualMethod').value,
+          endpoint: $('manualEndpoint').value, status: Number($('manualStatus').value || 200),
+          headers: parseMap($('manualHeaders').value, { 'Content-Type': 'application/json' }),
+          query: parseMap($('manualQuery').value), request_headers: parseMap($('manualReqHeaders').value),
+          delay_ms: Number($('manualDelay').value || 0), priority: Number($('manualPriority').value || 0), body
+        };
+        await api('mocks', { method: 'POST', body: JSON.stringify(mock) });
+        message($('manualMessages'), 'Manual mock saved.', true);
+        await loadState(); renderState(); renderMocks();
+      } catch (error) { message($('manualMessages'), error.message); }
+    }
+
+    async function deleteSelectedMock() {
+      if (!state.selectedMock || !confirm(`Delete ${state.selectedMock.method} ${state.selectedMock.endpoint}?`)) return;
+      await api('mocks/' + encodeURIComponent(state.selectedMock.id), { method: 'DELETE' });
+      state.selectedMock = null;
+      $('mockPreview').textContent = 'Select a mock to inspect it.';
+      $('testMockBtn').disabled = true;
+      $('deleteMockBtn').disabled = true;
+      await loadState(); renderState(); renderMocks();
+    }
+
+    async function testSelectedMock() {
+      if (!state.selectedMock) return;
+      const preview = $('testPreview');
+      preview.classList.remove('hidden');
+      preview.textContent = 'Requesting...';
+      try {
+        const response = await fetch(state.selectedMock.endpoint, { method: state.selectedMock.method });
+        const text = await response.text();
+        let parsed = text;
+        try { parsed = JSON.parse(text); } catch (_) {}
+        preview.textContent = `${response.status} ${response.statusText}\n` + (typeof parsed === 'string' ? parsed : pretty(parsed));
+        await loadTraffic(); await loadState(); renderState();
+      } catch (error) { preview.textContent = error.message; }
+    }
+
+    async function saveSettings() {
+      try {
+        await api('settings', { method: 'POST', body: JSON.stringify({ provider: $('provider').value, model: $('model').value, endpoint: $('endpointSetting').value }) });
+        message($('settingsMessages'), 'Settings saved.', true);
+        await loadState(); renderState();
+      } catch (error) { message($('settingsMessages'), error.message); }
+    }
+
+    async function clearTraffic() {
+      await api('traffic', { method: 'DELETE' });
+      await loadTraffic(); await loadState(); renderState();
+    }
+
+    document.querySelectorAll('nav button').forEach((button) => button.addEventListener('click', () => setView(button.dataset.view)));
+    document.querySelectorAll('[data-open-view]').forEach((button) => button.addEventListener('click', () => setView(button.dataset.openView)));
+    $('refreshBtn').addEventListener('click', loadAll);
+    $('generateBtn').addEventListener('click', generateMock);
+    $('saveGeneratedBtn').addEventListener('click', saveGenerated);
+    $('previewOpenAPIBtn').addEventListener('click', previewOpenAPI);
+    $('importOpenAPIBtn').addEventListener('click', importOpenAPI);
+    $('scanProjectBtn').addEventListener('click', scanProject);
+    $('importProjectBtn').addEventListener('click', importProjectScan);
+    $('selectExternalProjectBtn').addEventListener('click', () => selectProjectIntegrations('external'));
+    $('selectAllProjectBtn').addEventListener('click', () => selectProjectIntegrations('all'));
+    $('clearProjectSelectionBtn').addEventListener('click', () => selectProjectIntegrations('none'));
+    $('startEvaluationBtn').addEventListener('click', startEvaluation);
+    $('refreshEvaluationsBtn').addEventListener('click', loadEvaluations);
+    $('saveManualBtn').addEventListener('click', saveManual);
+    $('deleteMockBtn').addEventListener('click', deleteSelectedMock);
+    $('testMockBtn').addEventListener('click', testSelectedMock);
+    $('saveSettingsBtn').addEventListener('click', saveSettings);
+    $('loadModelsBtn').addEventListener('click', loadModels);
+    $('clearTrafficBtn').addEventListener('click', clearTraffic);
+    $('downloadCustomBtn').addEventListener('click', () => downloadModel({ url: $('customModelUrl').value, filename: $('customModelFilename').value, name: $('customModelName').value }));
+
+    loadAll().catch((error) => { $('subtitle').textContent = error.message; });
+    setInterval(async () => { await loadTraffic(); await loadState(); renderState(); }, 5000);
+  </script>
+</body>
+</html>
